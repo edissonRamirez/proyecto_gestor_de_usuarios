@@ -42,7 +42,7 @@ module.exports = {
       'meta-8': '#F0950C',
       'meta-9': '#E5E7EB',
       success: '#219653',
-      danger: '#D34053',
+      danger: '#e2112dff',
       warning: '#FFA70B',
     },
     screens: {
