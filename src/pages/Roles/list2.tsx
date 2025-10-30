@@ -36,6 +36,7 @@ const ListRoles: React.FC = () => {
       </h2>
 
       <GenericTable
+        name="Roles List"
         data={roles}
         columns={["id", "name"]}
         actions={[

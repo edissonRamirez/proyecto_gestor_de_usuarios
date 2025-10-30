@@ -6,14 +6,17 @@ interface Action {
 }
 
 interface GenericTableProps {
+  name: string;
   data: Record<string, any>[];  // Record significa que es un vector de objetos con claves string y valores de cualquier tipo
   columns: string[];
   actions: Action[];
   onAction: (name: string, item: Record<string, any>) => void;
 }
 
-const GenericTable: React.FC<GenericTableProps> = ({ data, columns, actions, onAction }) => {
+const GenericTable: React.FC<GenericTableProps> = ({ name, data, columns, actions, onAction }) => {
   return (
+    <>
+    <h2 className="text-2xl font-bold text-gray-800 mb-6 border-b-2 border-blue-600 pb-2">{name}</h2>
     <div className="overflow-x-auto rounded-lg shadow">
       <table className="min-w-full divide-y divide-gray-200 text-sm text-left">
         <thead className="bg-primary text-white uppercase text-xs font-semibold">
@@ -53,6 +56,7 @@ const GenericTable: React.FC<GenericTableProps> = ({ data, columns, actions, onA
         </tbody>
       </table>
     </div>
+    </>
   );
 };
 

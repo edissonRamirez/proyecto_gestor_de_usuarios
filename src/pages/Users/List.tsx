@@ -33,8 +33,8 @@ const ListUsers: React.FC = () => {
 
     return (
         <div>
-            <h2 className="text-2xl font-bold text-gray-800 mb-6 border-b-2 border-blue-600 pb-2">User List</h2>
             <GenericTable
+                name="Users List"
                 data={users}
                 columns={["id", "name", "email"]}
                 actions={[
