@@ -31,9 +31,6 @@ const ListRoles: React.FC = () => {
 
   return (
     <div className="p-4">
-      <h2 className="text-2xl font-bold text-gray-800 mb-6 border-b-2 border-blue-600 pb-2">
-        Roles List
-      </h2>
 
       <GenericTable
         name="Roles List"

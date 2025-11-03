@@ -4,6 +4,8 @@ import CreateUser from '../pages/Users/Create';
 import UpdateUser from '../pages/Users/Update';
 import ListRoles from '../pages/Roles/list2';
 import ListPermissions from '../pages/Permissions/List';
+import ProfileView from '../components/ProfileView';
+import ProfilePage from '../pages/Profile/ProfilePage';
 
 const Calendar = lazy(() => import('../pages/Calendar'));
 const Chart = lazy(() => import('../pages/Chart'));
@@ -17,6 +19,14 @@ const Buttons = lazy(() => import('../pages/UiElements/Buttons'));
 const Demo= lazy(() => import('../pages/Demo'));
 
 const coreRoutes = [
+  {
+    path: '/profile/update/:id',
+  },
+  {
+    path: '/profile/:id',
+    title: 'Profile',
+    component: ProfilePage,
+  },
   {
     path: '/roles/list',
     title: 'List Roles',
