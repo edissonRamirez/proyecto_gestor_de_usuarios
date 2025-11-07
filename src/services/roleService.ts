@@ -1,13 +1,13 @@
 import axios from "axios";
 import { Role } from "../models/Role";
 
-const API_URL = import.meta.env.VITE_API_URL + "/roles" || "";
+const API_URL = import.meta.env.VITE_API_URL + "/api/roles" || "";
 
 class RoleService {
   // Obtener todos los roles
   async getRoles(): Promise<Role[]> {
     try {
-      const response = await axios.get<Role[]>(`${API_URL}/list`);
+      const response = await axios.get<Role[]>(`${API_URL}`);
       return response.data;
     } catch (error) {
       console.error("Error al obtener roles:", error);

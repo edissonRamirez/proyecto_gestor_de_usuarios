@@ -16,9 +16,10 @@ const ProfileFormValidator: React.FC<ProfileFormProps> = ({ profile, handleUpdat
     <Formik
       enableReinitialize
       initialValues={{
-        phone: profile?.phone || "",
-        photo_url: profile?.photo_url || "",
-        user: profile?.user || { name: "", email: "" },
+        id: profile?.id ?? undefined,
+        phone: profile?.phone ?? "",
+        photo_url: profile?.photo_url ?? "",
+        user: profile?.user ?? { name: "", email: "" },
       }}
       validationSchema={Yup.object({
         phone: Yup.string()
@@ -35,10 +36,32 @@ const ProfileFormValidator: React.FC<ProfileFormProps> = ({ profile, handleUpdat
           className="flex flex-col bg-white rounded-md shadow-md p-6 max-w-xl mx-auto"
         >
           <h2 className="text-2xl font-bold text-center mb-6">
-            {profile?.user?.name || "Usuario"} - Profile
+            {profile?.user?.name || "Usuario"}'s Profile
           </h2>
 
-          {/* Name */}
+          {/* Foto (permitir actualización) */}
+          <div className="mb-6">
+            <label className="block text-lg font-medium text-gray-700">Foto</label>
+            <div className="mb-2">
+              {profile?.photo_url ? (
+                <img
+                  src={profile.photo_url}
+                  alt="Foto de perfil"
+                  className="w-32 h-32 rounded-full object-cover"
+                />
+              ) : (
+                <p className="text-gray-500">Sin foto de perfil</p>
+              )}
+            </div>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => setSelectedFile(e.currentTarget.files?.[0] || null)}
+              className="w-full border rounded-md p-2"
+            />
+          </div>
+
+          {/* Name (solo lectura) */}
           <div className="mb-4">
             <label className="block text-lg font-medium text-gray-700">Name</label>
             <Field
@@ -50,7 +73,7 @@ const ProfileFormValidator: React.FC<ProfileFormProps> = ({ profile, handleUpdat
             />
           </div>
 
-          {/* Email */}
+          {/* Email (solo lectura) */}
           <div className="mb-4">
             <label className="block text-lg font-medium text-gray-700">Email</label>
             <Field
@@ -69,22 +92,13 @@ const ProfileFormValidator: React.FC<ProfileFormProps> = ({ profile, handleUpdat
             <ErrorMessage name="phone" component="p" className="text-red-500 text-sm" />
           </div>
 
-          {/* Photo */}
-          <div className="mb-6">
-            <label className="block text-lg font-medium text-gray-700">Photo</label>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) => setSelectedFile(e.currentTarget.files?.[0] || null)}
-              className="w-full border rounded-md p-2"
-            />
-          </div>
+          
 
           <button
             type="submit"
-            className="bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition"
+            className="bg-meta-6 text-white py-2 rounded-md hover:bg-blue-700 transition"
           >
-            Update
+            Actualizar
           </button>
         </Form>
       )}

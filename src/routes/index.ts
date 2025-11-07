@@ -4,8 +4,11 @@ import CreateUser from '../pages/Users/Create';
 import UpdateUser from '../pages/Users/Update';
 import ListRoles from '../pages/Roles/list2';
 import ListPermissions from '../pages/Permissions/List';
-import ProfileView from '../components/ProfileView';
 import ProfilePage from '../pages/Profile/ProfilePage';
+import ListRolePermissions from '../pages/RolePermissions/ListRolePermissions';
+import UpdateProfilePage from '../pages/Profile/UpdateProfilePage';
+import RolePermissionPage from '../pages/RolePermissions/AddPermissionToRole';
+import AddPermissionToRole from '../pages/RolePermissions/AddPermissionToRole';
 
 const Calendar = lazy(() => import('../pages/Calendar'));
 const Chart = lazy(() => import('../pages/Chart'));
@@ -16,24 +19,37 @@ const Settings = lazy(() => import('../pages/Settings'));
 const Tables = lazy(() => import('../pages/Tables'));
 const Alerts = lazy(() => import('../pages/UiElements/Alerts'));
 const Buttons = lazy(() => import('../pages/UiElements/Buttons'));
-const Demo= lazy(() => import('../pages/Demo'));
+const Demo = lazy(() => import('../pages/Demo'));
 
 const coreRoutes = [
   {
-    path: '/profile/update/:id',
+    path: "/role-permissions",
+    title: "List Role Permissions",
+    component: ListRolePermissions,
   },
   {
-    path: '/profile/:id',
+    path: "/role-permissions/create",
+    title: "Assign Role Permission",
+    component: AddPermissionToRole,
+  },
+
+  {
+    path: '/api/profile',
     title: 'Profile',
     component: ProfilePage,
   },
   {
-    path: '/roles/list',
+    path: '/api/profiles/:id',
+    title: 'Update Profile',
+    component: UpdateProfilePage,
+  },
+  {
+    path: '/api/roles',
     title: 'List Roles',
     component: ListRoles,
   },
   {
-    path: '/permissions/list',
+    path: '/api/permissions',
     title: 'List Permissions',
     component: ListPermissions,
   },
@@ -53,7 +69,7 @@ const coreRoutes = [
     component: UpdateUser,
   },
   {
-    path: '/users/list',
+    path: '/api/users',
     title: 'List Users',
     component: ListUsers,
   },

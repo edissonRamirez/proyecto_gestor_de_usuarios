@@ -1,13 +1,13 @@
 import axios from "axios";
 import { Permission } from "../models/Permission";
 
-const API_URL = import.meta.env.VITE_API_URL + "/permissions" || "";
+const API_URL = import.meta.env.VITE_API_URL + "/api/permissions" || "";
 
 class PermissionService {
     // Obtener todos los permisos
     async getPermissions(): Promise<Permission[]> {
         try{
-            const response = await axios.get<Permission[]>(`${API_URL}/list`);
+            const response = await axios.get<Permission[]>(`${API_URL}`);
             return response.data;
         } catch (error) {
             console.error("Error al obtener permisos: ", error);
