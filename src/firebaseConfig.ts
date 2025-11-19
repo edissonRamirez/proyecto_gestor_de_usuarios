@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, GithubAuthProvider, signInWithPopup } from "firebase/auth";
+import { getAuth, GithubAuthProvider, GoogleAuthProvider,signInWithPopup } from "firebase/auth";
 
 // 🔹 Tu configuración de Firebase
 const firebaseConfig = {
@@ -15,9 +15,12 @@ const firebaseConfig = {
 // 🔹 Inicializar Firebase
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
+
+// ------------------------------
+//     🔵 LOGIN CON GITHUB
+// ------------------------------
 export const githubProvider = new GithubAuthProvider();
 
-// 🔹 Función de inicio de sesión con GitHub
 export const signInWithGitHub = async () => {
   try {
     const result = await signInWithPopup(auth, githubProvider);
@@ -41,3 +44,26 @@ export const signInWithGitHub = async () => {
     throw error;
   }
 };
+
+// ------------------------------
+//     🔴 LOGIN CON GOOGLE
+// ------------------------------
+export const googleProvider = new GoogleAuthProvider();
+
+export const signInWithGoogle = async () => {
+  try {
+    const result = await signInWithPopup(auth, googleProvider);
+    const user = result.user;
+
+    return {
+      name: user.displayName || "Google User",
+      email: user.email,
+      avatar_url: user.photoURL,
+      uid: user.uid,
+    };
+  } catch (error) {
+    console.error("Error al iniciar sesión con Google:", error);
+    throw error;
+  }
+};
+

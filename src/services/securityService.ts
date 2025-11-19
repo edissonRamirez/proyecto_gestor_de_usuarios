@@ -49,6 +49,8 @@ class SecurityService extends EventTarget {
     
     logout() {
         this.user = {};
+        // localStorage.removeItem(this.keySession);
+        localStorage.removeItem("user");
         
         this.dispatchEvent(new CustomEvent("userChange", { detail: null }));
         store.dispatch(setUser(null));

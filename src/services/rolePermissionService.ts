@@ -1,4 +1,5 @@
 // src/services/rolePermissionService.ts
+import axios from "axios";
 import api from "../interceptors/axiosInterceptor";
 import { RolePermission } from "../models/RolePermission";
 
@@ -20,12 +21,25 @@ class RolePermissionService {
   async addPermissionToRole(roleId: number, permissionId: number): Promise<RolePermission | null> {
     try {
       const response = await api.post<RolePermission>(
-        `${API_URL}/role/${roleId}/permission/${permissionId}`
+        `${API_URL}/role/${roleId}/permission/${permissionId}`,
+        {}, // ← cuerpo vacío
+        { headers: { "Content-Type": "application/json" } }
       );
       return response.data;
     } catch (error) {
       console.error("Error al asignar permiso al rol:", error);
       return null;
+    }
+  }
+
+  // Eliminar un rol
+  async deleteRolePermission(id: string): Promise<boolean> {
+    try {
+      await axios.delete(`${API_URL}/${id}`);
+      return true;
+    } catch (error) {
+      console.error("Error al eliminar rol:", error);
+      return false;
     }
   }
 }

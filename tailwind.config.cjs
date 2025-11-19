@@ -44,6 +44,7 @@ module.exports = {
       success: '#219653',
       danger: '#e2112dff',
       warning: '#FFA70B',
+      custom_font: '#3a3a3aff',
     },
     screens: {
       '2xsm': '375px',

@@ -1,72 +1,72 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import GenericTable from "../../components/GenericTable";
-import { User } from "../../models/User";
-import { userService } from "../../services/userService";
-import Swal from "sweetalert2";
+import { Role } from "../../models/Role";
+import { roleService } from "../../services/roleService";
+import GenericTableBootstrap from "../../components/GenericTableBootstrap";
+import { useDesign } from "../../context/DesignContext";
 
-const ListUsers: React.FC = () => {
-    const [users, setUsers] = useState<User[]>([]);
+const ListRoles: React.FC = () => {
+  const navigate = useNavigate();
+  const [roles, setRoles] = useState<Role[]>([]);
+  const { design } = useDesign();
 
-    useEffect(() => {
+  // 🔥 Selector según la librería
+  const TableComponent =
+      design === "tailwind" 
+      ? GenericTable 
+      : GenericTableBootstrap;
 
-        fetchData();
-        console.log("Users fetched:", users);
-    }, []);
+  // 🔹 Cargar los roles al montar el componente
+  useEffect(() => {
+    console.log("Cargando roles...");
+    fetchData();
+  }, []);
 
-    const fetchData = async () => {
-        try {
-            const users = await userService.getUsers();
-            setUsers(users);
-        } catch (error) {
-            console.error("Error fetching users:", error);
+  const fetchData = async () => {
+    const roles = await roleService.getRoles();
+    setRoles(roles);
+  };
+
+  const handleAction = (action: string, item: Record<string, any>) => {
+    if (action === "edit") {
+      console.log("Edit role:", item);
+      navigate(`/api/roles/${item.id}`);
+    } else if (action === "delete" && item.id) {
+      console.log("Delete role:", item);
+      handleDelete(item.id);
+      // Aquí más adelante puedes agregar confirmación y eliminación real
+    }
+  };
+  const handleDelete = async (id: number) => {
+      if (window.confirm("Are you sure you want to delete this role?")) {
+        const success = await roleService.deleteRole(id);
+        if (success) {
+          alert("Role deleted successfully ✅");
+          fetchData();
+          navigate("/api/roles");
+        } else {
+          alert("Error deleting role ❌");
         }
+      }
     };
 
-    const handleAction = async (action: string, item: User) => {
-        if (action === "edit") {
-            console.log("Edit user:", item);
-        } else if (action === "delete") {
-            console.log("Delete user:", item);
-            Swal.fire({
-                title: "Eliminación",
-                text: "Está seguro de querer eliminar el registro?",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#3085d6",
-                cancelButtonColor: "#d33",
-                confirmButtonText: "Si, eliminar",
-                cancelButtonText: "No"
-            }).then(async (result) => {
-                if (result.isConfirmed) {
-                    const success = await userService.deleteUser(item.id!);
-                    if (success) {
-                        Swal.fire({
-                            title: "Eliminado",
-                            text: "El registro se ha eliminado",
-                            icon: "success"
-                        });
-                    }
-                    // 🔹 Vuelve a obtener los usuarios después de eliminar uno
-                    fetchData();
-                }
-            });
-        }
-    };
+  return (
+    <div className="p-4">
 
-    return (
-        <div>
-            <h2>User List</h2>
-            <GenericTable
-                data={users}
-                columns={["id", "name", "email"]}
-                actions={[
-                    { name: "edit", label: "Edit" },
-                    { name: "delete", label: "Delete" },
-                ]}
-                onAction={handleAction}
-            />
-        </div>
-    );
+      <TableComponent<Role>
+        name="Roles List"
+        entity="roles"
+        data={roles}
+        columns={["id", "name", "description"]}
+        actions={[
+          { name: "edit", label: "✏️ Update" },
+          { name: "delete", label: "🗑️ Delete" },
+        ]}
+        onAction={handleAction}
+      />
+    </div>
+  );
 };
 
-export default ListUsers;
+export default ListRoles;

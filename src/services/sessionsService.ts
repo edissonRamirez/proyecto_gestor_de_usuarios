@@ -1,65 +1,62 @@
 import axios from "axios";
-import { User } from "../models/User";
 import { Session } from "../models/Session";
 
-const API_URL = import.meta.env.VITE_API_URL + "/api/sessions" || "";
+const API_URL = import.meta.env.VITE_API_URL + "/api/sessions";
 
 class SessionService {
-  // Obtener todas las sesiones
   async getSessions(): Promise<Session[]> {
     try {
-      const response = await axios.get<Session[]>(`${API_URL}`);
-      return response.data;
+      const res = await axios.get(API_URL);
+      return res.data;
     } catch (error) {
       console.error("Error al obtener sesiones:", error);
       return [];
     }
   }
 
-  // Obtener una sesión por ID
-  async getSessionById(id: number): Promise<Session | null> {
+  async getSessionById(id: string): Promise<Session | null> {
     try {
-      const response = await axios.get<Session>(`${API_URL}/${id}`);
-      return response.data;
+      const res = await axios.get(`${API_URL}/${id}`);
+      return res.data;
     } catch (error) {
-      console.error("Sesión no encontrada:", error);
+      console.error("Error al obtener sesión:", error);
       return null;
     }
   }
 
-  // Crear una nueva sesión
-  async createSession(session: Omit<Session, "id">): Promise<Session | null> {
+  async createSession(userId: number, session: Session): Promise<Session | null> {
     try {
-      const response = await axios.post<Session>(API_URL, session);
-      return response.data;
+      const res = await axios.post(`${API_URL}/user/${userId}`, session, {
+        headers: { "Content-Type": "application/json" },
+      });
+      return res.data;
     } catch (error) {
       console.error("Error al crear sesión:", error);
       return null;
     }
   }
 
-  // Actualizar una sesión existente
-  async updateSession(id: number, session: Partial<Session>): Promise<Session | null> {
+  async updateSession(id: string, session: Session): Promise<boolean> {
     try {
-      const response = await axios.put<Session>(`${API_URL}/${id}`, session);
-      return response.data;
+      const res = await axios.put(`${API_URL}/${id}`, session, {
+        headers: { "Content-Type": "application/json" },
+      });
+      return res.status === 200;
     } catch (error) {
       console.error("Error al actualizar sesión:", error);
-      return null;
+      return false;
     }
   }
 
-  // Eliminar una sesión
-  async deleteRole(id: number): Promise<boolean> {
+  async deleteSession(id: number): Promise<boolean> {
     try {
-      await axios.delete(`${API_URL}/${id}`);
-      return true;
+      const res = await axios.delete(`${API_URL}/${id}`);
+      return res.status === 200;
     } catch (error) {
-      console.error("Error al eliminar rol:", error);
+      console.error("Error al eliminar sesión:", error);
       return false;
     }
   }
 }
 
-// Exportamos una instancia para reutilizar
 export const sessionService = new SessionService();

@@ -1,15 +1,19 @@
 import ProfileView from "../../components/ProfileView";
+import ProfileViewBootstrap from "../../components/ProfileViewBootstrap";
+import { useDesign } from "../../context/DesignContext";
 
 const ProfilePage: React.FC = () => {
   const storedUser = localStorage.getItem("user");
   console.log("Stored User: ", storedUser);
   
   const user = storedUser ? JSON.parse(storedUser) : null;
+  const { design } = useDesign();
+  const ProfileComponent = design === "tailwind" ? ProfileView : ProfileViewBootstrap;
 
   return (
     <div className="p-6 flex justify-center">
       {user ? (
-        <ProfileView
+        <ProfileComponent
           photo_url={user.avatar_url}
           phone={"No registrado"}
           user={{

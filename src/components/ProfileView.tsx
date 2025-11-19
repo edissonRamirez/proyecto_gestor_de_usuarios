@@ -20,10 +20,14 @@ const ProfileView: React.FC<ProfileViewProps> = ({ photo_url, phone, user }) => 
         {/* Imagen del perfil */}
         <div className="flex justify-center md:justify-start w-full md:w-1/2 mb-6 md:mb-0">
           <img
-            src={photo_url || "/default-avatar.png"}
+            src={photo_url}
+            onError={(e) => {
+              e.currentTarget.src = "/default-avatar.jpg";
+            }}
             alt="Foto de perfil"
             className="w-48 h-48 rounded-md object-cover border-2 border-gray-300"
           />
+
         </div>
 
         {/* Información del usuario */}

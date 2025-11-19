@@ -37,7 +37,7 @@ class UserService {
 
     async updateUser(id: number, user: Partial<User>): Promise<User | null> {
         try {
-            const response = await axios.put<User>(`${API_URL}/update/${id}`, user);
+            const response = await axios.put<User>(`${API_URL}/${id}`, user);
             return response.data;
         } catch (error) {
             console.error("Error al actualizar usuario:", error);

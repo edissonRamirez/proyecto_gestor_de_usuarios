@@ -1,62 +1,83 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
+import * as Yup from "yup";
+
 import { Profile } from "../../models/Profile";
 import { profileService } from "../../services/profileService";
-import ProfileFormValidator from "../../components/ProfileFormValidator";
-import { useNavigate } from "react-router-dom";
+import Breadcrumb from "../../components/Breadcrumb";
+import CreateOrUpdateValidator from "../../components/CreateOrUpdateValidator";
+import { useDesign } from "../../context/DesignContext";
+import CreateOrUpdateValidatorBootstrap from "../../components/CreateOrUpdateValidatorBootstrap";
 
 const UpdateProfilePage: React.FC = () => {
-  const { id } = useParams<{ id: string }>(); // <- aquí viene el profile_id
+  const { id } = useParams<{ id: string }>();
   const [profile, setProfile] = useState<Profile | null>(null);
   const navigate = useNavigate();
+  const { design } = useDesign();
+  // 🔥 Selector del formulario según la librería activa
+    const FormComponent = design === "tailwind"
+        ? CreateOrUpdateValidator
+        : CreateOrUpdateValidatorBootstrap;
 
+  // 🔹 Cargar datos del perfil existente
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (!storedUser) {
-      console.warn("No hay usuario autenticado en localStorage.");
-      return;
-    }
-
-    const user = JSON.parse(storedUser);
-
-    // Creamos un perfil base con datos del usuario autenticado (GitHub)
-    const profileData: Profile = {
-      id: id ? Number(id) : undefined, // <- lo obtenemos de la URL
-      photo_url: user.avatar_url || "",
-      phone: "",
-      user: {
-        id: undefined, // este no importa, lo maneja backend
-        name: user.name,
-        email: user.email,
-      },
+    const fetchProfile = async () => {
+      if (!id) return;
+      const data = await profileService.getProfileById(Number(id));
+      setProfile(data);
     };
-
-    setProfile(profileData);
+    fetchProfile();
   }, [id]);
 
-  const handleUpdate = async (values: Profile, file?: File) => {
-    if (!id) {
-      alert("Error: No se encontró el ID del perfil en la URL");
-      return;
-    }
+  // 🔹 Manejo del envío de actualización
+  const handleUpdateProfile = async (values: Profile, file?: File) => {
+    try {
+      if (!id) {
+        Swal.fire("Error", "No se encontró el ID del perfil", "error");
+        return;
+      }
 
-    const updated = await profileService.createOrUpdateProfile(Number(id), values, file);
-    if (updated) {
-      alert("Perfil actualizado correctamente ✅");
-      setProfile(updated);
-      navigate(`/api/profile`);
+      const response = await profileService.updateProfile(Number(id), values, file);
+
+      if (response) {
+        Swal.fire("✅ Éxito", "Perfil actualizado correctamente.", "success");
+        navigate("/api/profiles");
+      } else {
+        Swal.fire("❌ Error", "No se pudo actualizar el perfil.", "error");
+      }
+    } catch (error) {
+      console.error("Error al actualizar perfil:", error);
+      Swal.fire("❌ Error", "Hubo un problema al actualizar el perfil.", "error");
     }
   };
 
+  if (!profile)
+    return <p className="text-center text-gray-500">Cargando perfil...</p>;
+
   return (
-    <div className="p-8 bg-gray-100 min-h-screen flex justify-center">
-      <div className="w-full max-w-xl bg-white rounded-lg shadow-md p-6">
-        {profile ? (
-          <ProfileFormValidator profile={profile} handleUpdate={handleUpdate} />
-        ) : (
-          <p className="text-center text-gray-500">Cargando perfil...</p>
-        )}
-      </div>
+    <div className="p-6">
+      <Breadcrumb pageName="Actualizar Perfil" />
+      <FormComponent<Profile>
+        mode={2}
+        title="Actualizar Perfil de Usuario"
+        entity={profile}
+        fields={[
+          { name: "phone", label: "Teléfono", type: "text", required: true },
+          {
+            name: "photo",
+            label: "Actualizar Foto (Opcional)",
+            type: "file",
+            required: false,
+          },
+        ]}
+        validationSchema={Yup.object({
+          phone: Yup.string()
+            .matches(/^[0-9+ ]+$/, "Debe contener solo números o '+'")
+            .required("El teléfono es obligatorio"),
+        })}
+        handleUpdate={handleUpdateProfile}
+      />
     </div>
   );
 };

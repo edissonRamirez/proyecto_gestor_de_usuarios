@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 
 // 🔹 Importaciones nuevas
 import { signInWithGitHub } from "../../firebaseConfig";
+import { signInWithGoogle } from "../../firebaseConfig";
 import { useDispatch } from "react-redux";
 import { setUser } from "../../store/userSlice";
 
@@ -42,6 +43,27 @@ const SignIn: React.FC = () => {
       console.error("Error en el login con GitHub:", error);
     }
   };
+
+  const handleGoogleLogin = async () => {
+  try {
+    const user = await signInWithGoogle();
+    console.log("GOOGLE USER:", user);
+
+    // Guardar en localStorage y Redux
+    localStorage.setItem("user", JSON.stringify(user));
+    dispatch(setUser(user));
+    alert(`Bienvenido ${user.name}`);
+    
+
+    // Si manejas JWT tu backend, puedes enviar user.email y user.uid
+    // await backendAuthGoogle(user);
+
+    // Redirige al dashboard
+    navigate("/");
+  } catch (error) {
+    alert("Error al iniciar sesión con Google");
+  }
+};
 
   return (
     <>
@@ -154,7 +176,7 @@ const SignIn: React.FC = () => {
                       Login
                     </button>
 
-                    {/* 🔹 Botón alternativo: Login con GitHub */}
+                    {/* 🔹 Login con GitHub */}
                     <button
                       type="button"
                       onClick={handleGitHubLogin}
@@ -172,6 +194,26 @@ const SignIn: React.FC = () => {
                       </svg>
                       Sign in with GitHub
                     </button>
+                    {/* 🔹 Login con Google */}
+                    <button
+                      type="button"
+                      onClick={handleGoogleLogin}
+                      className="flex w-full items-center justify-center gap-3.5 rounded-lg border border-stroke bg-gray p-4 hover:bg-opacity-70 dark:border-strokedark dark:bg-meta-4"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="20"
+                        height="20"
+                        viewBox="0 0 488 512"
+                        fill="currentColor"
+                        className="text-black dark:text-white"
+                      >
+                        <path d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8C331.1 8 398.6 42.7 442.7 91.3l-89.5 85.9C326.3 149 292 136 248 136c-79.5 0-144 64.5-144 144s64.5 144 144 144c73.7 0 120.1-42 129.4-101H248v-80h240c2 12 4 24 4 40z" />
+                      </svg>
+                      Sign in with Google
+                    </button>
+
+
                   </Form>
                 )}
               </Formik>

@@ -1,56 +1,65 @@
-// src/pages/UserRolesPage.tsx
+// src/pages/UserRoles/ListUserRolesPage.tsx
 import { useEffect, useState } from "react";
-import RelationForm from "../../components/RelationForm";
-import { userService } from "../../services/userService";
-import { roleService } from "../../services/roleService";
+import GenericTable from "../../components/GenericTable";
 import { userRoleService } from "../../services/userRoleService";
-import { User } from "../../models/User";
-import { Role } from "../../models/Role";
+import { UserRole } from "../../models/UserRole";
+import { useNavigate } from "react-router-dom";
+import GenericTableBootstrap from "../../components/GenericTableBootstrap";
+import { useDesign } from "../../context/DesignContext";
 
-const UserRolesPage: React.FC = () => {
-  const [users, setUsers] = useState<User[]>([]);
-  const [roles, setRoles] = useState<Role[]>([]);
+const ListUserRolesPage: React.FC = () => {
+  const [userRoles, setUserRoles] = useState<UserRole[]>([]);
+  const navigate = useNavigate();
+  const { design } = useDesign();
+
+  // 🔥 Selector según la librería
+  const TableComponent =
+      design === "tailwind" 
+      ? GenericTable 
+      : GenericTableBootstrap;
 
   useEffect(() => {
-    loadData();
+    loadUserRoles();
   }, []);
 
-  const loadData = async () => {
-    const usersData = await userService.getUsers();
-    const rolesData = await roleService.getRoles();
-    setUsers(usersData || []);
-    setRoles(rolesData || []);
+  const loadUserRoles = async () => {
+    const data = await userRoleService.getUserRoles();
+    setUserRoles(data);
   };
 
-  const handleAssignRole = async (userId: number, roleId: number) => {
-    const response = await userRoleService.assignRoleToUser(userId, roleId);
-    if (response) {
-      alert("✅ Rol asignado correctamente al usuario");
-    } else {
-      alert("❌ Error al asignar el rol al usuario");
+  const handleAction = async (action: string, item: UserRole) => {
+    if (action === "delete" && item.id) {
+      const confirmed = confirm("¿Deseas eliminar esta relación?");
+      if (confirmed) {
+        const success = await userRoleService.deleteUserRole(item.id);
+        if (success) {
+          alert("✅ Relación eliminada correctamente");
+          loadUserRoles();
+        } else {
+          alert("❌ Error al eliminar la relación");
+        }
+      }
+    } else if (action === "edit") {
+      console.log("Edit user role:", item);
+      navigate(`/api/user-roles/${item.id}`);
     }
   };
 
   return (
-    <RelationForm
-      title="Asignar Rol a Usuario"
-      firstLabel="Usuario"
-      secondLabel="Rol"
-      firstList={users
-        .filter((u) => u.id !== undefined)
-        .map((u) => ({
-          id: u.id as number,
-          label: u.name ?? "Sin nombre", // <-- Valor seguro
-        }))}
-      secondList={roles
-        .filter((r) => r.id !== undefined)
-        .map((r) => ({
-          id: r.id as number,
-          label: r.name ?? "Sin nombre", // <-- Valor seguro
-        }))}
-      onSubmit={handleAssignRole}
-    />
+    <div>
+      <TableComponent<UserRole>
+        name="List UserRoles"
+        entity="user-roles"
+        data={userRoles}
+        columns={["user_id", "user_name", "role_id", "role_name", "startAt", "endAt"]}
+        actions={[
+                    { name: "edit", label: "✏️ Update" },
+                    { name: "delete", label: "🗑️ Delete" },
+                ]}
+        onAction={handleAction}
+      />
+    </div>
   );
 };
 
-export default UserRolesPage;
+export default ListUserRolesPage;

@@ -6,10 +6,20 @@ import { permissionService } from "../../services/permissionService";
 import { rolePermissionService } from "../../services/rolePermissionService";
 import { Role } from "../../models/Role";
 import { Permission } from "../../models/Permission";
+import { useNavigate } from "react-router";
+import { useDesign } from "../../context/DesignContext";
+import RelationFormBootstrap from "../../components/RelationFormBootstrap";
 
 const AddPermissionToRole: React.FC = () => {
   const [roles, setRoles] = useState<Role[]>([]);
   const [permissions, setPermissions] = useState<Permission[]>([]);
+  const navigate = useNavigate();
+  const { design } = useDesign();
+
+  const RelationComponent = 
+    design === "tailwind"
+      ? RelationForm
+      : RelationFormBootstrap;
 
   useEffect(() => {
     fetchData();
@@ -26,13 +36,14 @@ const AddPermissionToRole: React.FC = () => {
     const response = await rolePermissionService.addPermissionToRole(roleId, permissionId);
     if (response) {
       alert("✅ Permiso asignado correctamente al rol");
+      navigate("/api/role-permissions");
     } else {
       alert("❌ Error al asignar el permiso");
     }
   };
 
   return (
-    <RelationForm
+    <RelationComponent
       title="Asignar Permiso a Rol"
       firstLabel="Rol"
       secondLabel="Permiso"

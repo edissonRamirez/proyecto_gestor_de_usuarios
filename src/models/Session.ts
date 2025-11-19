@@ -1,10 +1,10 @@
 import { User } from "./User";
 
 export interface Session {
-    id?: number;
-    token?: string;
-    expiration?: Date;
-    faCode?: string;
-    state?: string;
-    user?: User;
+  id?: string;
+  token?: string;
+  expiration?: string; // ✅ string porque Flask recibe un datetime parseado
+  FACode?: string;
+  state?: string;
+  user_id?: User["id"];
 }

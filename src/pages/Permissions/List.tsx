@@ -3,10 +3,19 @@ import GenericTable from "../../components/GenericTable";
 import { useEffect, useState } from "react";
 import { Permission } from "../../models/Permission";
 import { permissionService } from "../../services/permissionService";
+import GenericTableBootstrap from "../../components/GenericTableBootstrap";
+import { useDesign } from "../../context/DesignContext";
 
 const ListPermissions: React.FC = () => {
   const navigate = useNavigate();
   const [permissions, setPermissions] = useState<Permission[]>([]);
+  const { design } = useDesign();
+
+  // 🔥 Selector según la librería
+  const TableComponent =
+      design === "tailwind" 
+      ? GenericTable 
+      : GenericTableBootstrap;
 
   // 🔹 Cargar los permisos al montar el componente
   useEffect(() => {
@@ -24,7 +33,7 @@ const ListPermissions: React.FC = () => {
   const handleAction = (action: string, item: Record<string, any>) => {
     if (action === "edit") {
       console.log("Edit permission:", item);
-      navigate(`/permissions/update/${item.id}`);
+      navigate(`/api/permissions/${item.id}`);
     } else if (action === "delete") {
       console.log("Delete permission:", item);
       // Aquí más adelante puedes agregar confirmación y eliminación real
@@ -33,8 +42,9 @@ const ListPermissions: React.FC = () => {
 
   return (
     <div className="p-4">
-      <GenericTable
+      <TableComponent
         name="Permissions List"
+        entity="permissions"
         data={permissions}
         columns={["id", "url", "method"]}
         actions={[
